@@ -1,0 +1,89 @@
+<script type="text/javascript">
+    RED.nodes.registerType('powerai',{
+        category: 'IBM PowerAI',
+        color: '#a6bbcf',
+        defaults: {
+            name: {
+                value: ""
+            },
+            api : {
+                value: "",
+                required: true
+            },
+            host : {
+                value: "",
+                required: true
+            },
+            filename : {
+                value: "",
+                required: false
+            },
+            dataset : {
+                value: "",
+                required: true
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "file.png",
+        label: function() {
+            return this.name || "PowerAI Vision";
+        },
+        oneditprepare: function() {
+            var node = this;
+            node.apiOptions = {
+                Detections: {
+                    url: "/powerai-vision/api/dlapis/",
+                    name: "Object Classification / Detection"
+                }
+            };
+            
+            $("#node-input-api").empty();
+            var option1 = new Option("Select an API to call", null);
+            $(option1).prop('selected', true);
+            $(option1).prop('disabled', true);
+            $("#node-input-api").append(option1);
+
+            var apis = Object.keys(node.apiOptions);
+            for (var i = 0; i < apis.length; i++) {
+                var api = node.apiOptions[apis[i]];
+                var option = new Option(api.name, api.url);
+                if(api === node.api){
+                    $(option).prop('selected', true);
+                }
+                $("#node-input-api").append(option);
+            }
+
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="powerai">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-api"><i class="fa fa-server"></i> API</label>
+        <select id="node-input-api">
+            <option selected disabled>Select an API to call</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-host"><i class="icon-tag"></i> Host</label>
+        <input type="text" id="node-input-host" placeholder="82.20.74.85:9009">
+    </div>
+    <div class="form-row">
+        <label for="node-input-path"><i class="icon-tag"></i> Filename</label>
+        <input type="text" id="node-input-path" placeholder="/path/to/file">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dataset"><i class="icon-tag"></i> Dataset</label>
+        <input type="text" id="node-input-dataset" placeholder="dataset id">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="powerai">
+    <p>A node that calls the PowerAI Vision APIs</p>
+    <p>If the filename property is not set in the configuration then it is assumed to be passed as msg.payload.</p>
+</script>
